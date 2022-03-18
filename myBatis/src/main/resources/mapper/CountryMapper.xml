@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtl.mapper.CountryMapper">
+        <select id="selectMinisterByCountry" resultType="minister">
+            select * from minister where countryId=#{countryId}
+        </select>
+        <!--嵌套查询-->
+        <select id="queryCountryById" resultMap="countryWithMinister">
+            select * from country
+            where cid=#{cid}
+        </select>
+        <resultMap id="countryWithMinister" type="country">
+                <id property="cid" column="cid"/>
+                <result property="cname" column="cname"/>
+                <!--ofType是指集合中的数据类型，column指关联查询需要的参数-->
+                <collection property="ministers" ofType="minister" select="selectMinisterByCountry" column="cid"/>
+        </resultMap>
+        <!--嵌套结果-->
+        <select id="queryCountryById2" resultMap="countryWithMinister2">
+            select * from country,minister
+            where cid=#{cid}
+            and country.cid=minister.countryId
+        </select>
+        <resultMap id="countryWithMinister2" type="country">
+            <id property="cid" column="cid"/>
+            <result property="cname" column="cname"/>
+            <collection property="ministers" ofType="minister">
+                <id property="mid" column="mid"/>
+                <result property="mname" column="mname"/>
+            </collection>
+        </resultMap>
+</mapper>

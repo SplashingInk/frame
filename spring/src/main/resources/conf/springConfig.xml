@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="aopAspect" class="com.xtl.aop.AopAspect"/>
+    <!--切面类-->
+    <bean id="logAspect" class="com.xtl.aop.LogAspect"/>
+    <!--面向切面的编程 最主要的目的就是批量处理或者在不影响源代码的情况下，单独修改某个方法的逻辑 -->
+    <aop:config>
+        <aop:aspect ref="logAspect">
+            <!--配置切入点表达式-->
+            <aop:pointcut id="pc" expression="execution(* com.xtl.aop.*.*(..))"/>
+            <aop:before method="before" pointcut-ref="pc"/>
+            <aop:around method="around" pointcut-ref="pc"/>
+            <aop:after method="after"   pointcut-ref="pc" />
+            <aop:after-returning method="afterReturning" pointcut-ref="pc"/>
+            <aop:after-throwing method="afterThrowing" pointcut-ref="pc"/>
+        </aop:aspect>
+    </aop:config>
+
+    <!--setter方法注入-->
+    <bean id="doctor" class="com.xtl.pojo.Doctor">
+        <property name="id" value="1"/>
+        <property name="name" value="徐凤年"/>
+        <property name="age" value="25"/>
+    </bean>
+    <!--构造方法注入-->
+    <bean id="tom" class="com.xtl.pojo.Doctor">
+        <constructor-arg index="1" type="java.lang.String" value="姜泥"/>
+        <constructor-arg index="0" type="java.lang.Integer" value="2"/>
+        <constructor-arg index="2" type="java.lang.Integer" value="23"/>
+    </bean>
+    <bean id="complexTypeData" class="com.xtl.pojo.ComplexTypeData">
+        <property name="list">
+            <list>
+                <value>520</value>
+                <value>1314</value>
+                <value>1024</value>
+            </list>
+        </property>
+        <property name="set">
+            <set>
+                <value>云韵</value>
+                <value>萧炎</value>
+                <value>美杜莎女王</value>
+            </set>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="username">不良人</prop>
+                <prop key="password">102401314</prop>
+                <prop key="age">25</prop>
+            </props>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="日漫" value="12"/>
+                <entry key="国漫" value="25"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--引入数据源文件-->
+    <context:property-placeholder location="conf/db.properties"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <bean id="studentJDBCTemplate" class="com.xtl.dao.impl.StudentJdbcTemplateImpl">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+
+</beans>

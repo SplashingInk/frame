@@ -1,0 +1,17 @@
+spring:
+  rabbitmq:
+    addresses: 192.168.188.128
+    username: joker
+    password: 123456
+    port: 5672
+    virtual-host: /test
+    listener:
+      simple:
+        #设置手动确认消息
+        acknowledge-mode: manual
+    # 发布消息成功到交换器后会触发回调方法
+    publisher-confirm-type: correlated
+    #路由不出去会回退消息给生产者
+    publisher-returns: true
+server:
+  port: 8078

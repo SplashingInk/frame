@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtl.mapper.UserMapper">
+    <!--增加元素后，返回新增主键-->
+    <insert id="insertUser" parameterType="doctor" useGeneratedKeys="true" keyProperty="id">
+       <!-- <selectKey keyProperty="id" resultType="int" order="AFTER">
+            select last_insert_id();
+        </selectKey>-->
+        insert into doctor(name, age, sex)
+        value(#{name},#{age},#{sex})
+    </insert>
+    <!-- resultType：指定sql输出结果 的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。 -->
+    <select id="getUserById" parameterType="int" resultType="com.xtl.pojo.Doctor">
+        select * from doctor  where  id= #{id};
+    </select>
+    <select id="findAll" resultType="doctor">
+        select * from doctor;
+    </select>
+    <update id="updateUser" parameterType="doctor">
+        update doctor set name=#{name},age=#{age},sex=#{sex}
+        where id=#{id}
+    </update>
+    <delete id="deleteUserById" parameterType="int">
+        delete from doctor where id= #{id};
+    </delete>
+
+    <!-- ${}:表示拼接sql串，将接收到参数的内容不加任何修饰拼接在sql中。 使用${}拼接sql，引起 sql注入  -->
+    <!-- ${value}：接收输入 参数的内容，如果传入类型是简单类型，${}中只能使用value -->
+    <select id="findUserLike" parameterType="java.lang.String" resultType="doctor">
+        select * from doctor
+        where name like '%${name}%'
+    </select>
+    <select id="selectUserByKeyWord" parameterType="java.lang.String" resultType="doctor">
+        <bind name="pattern" value="'%'+keyword+'%'"/>
+        select * from doctor
+        where name like #{pattern}
+    </select>
+    <select id="selectUserByKeyWord2" parameterType="java.lang.String" resultType="doctor">
+        select * from doctor
+        /*MySQL的 CONCAT（）函数用于将多个字符串连接成一个字符串，是最重要的mysql函数之一*/
+        where name like CONCAT('%',#{keyword},'%');
+    </select>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into doctor(name, age, sex) values
+        <foreach collection="list" separator="," item="doctor">
+            (#{doctor.name},#{doctor.age},#{doctor.sex})
+        </foreach>
+    </insert>
+    <select id="batchSelect" parameterType="java.util.List" resultType="doctor">
+        select * from doctor where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <delete id="batchDelete" parameterType="java.util.List">
+        delete from doctor where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="batchUpdate" parameterType="list">
+        <foreach collection="list" item="doctor" open="" close="" separator=";">
+            update doctor
+            <set>
+                <if test="doctor.name!=null">
+                    name=#{doctor.name},
+                </if>
+                <if test="doctor.age!=null">
+                    age=#{doctor.age},
+                </if>
+                <if test="doctor.sex!=null">
+                    sex=#{doctor.sex}
+                </if>
+            </set>
+            <where>
+                id=#{doctor.id}
+            </where>
+        </foreach>
+    </update>
+</mapper>

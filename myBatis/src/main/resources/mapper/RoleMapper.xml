@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtl.mapper.RoleMapper">
+    <select id="findAllRoles" resultMap="roleMap">
+        select r.*,p.* from role r
+        left outer join role_person rp on  r.role_id=rp.roleId
+        left outer join person p on p.id=rp.personId
+    </select>
+    <resultMap id="roleMap" type="role">
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleDesc" column="role_desc"/>
+        <collection property="persons" ofType="person">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+            <result property="address" column="address"/>
+            <result property="sex" column="sex"/>
+            <result property="birthday" column="birthday"/>
+        </collection>
+    </resultMap>
+</mapper>

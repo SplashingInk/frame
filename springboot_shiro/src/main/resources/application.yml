@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
+    username: root
+    password: 15320721xzw12340
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+    encoding: UTF-8
+    mode: HTML
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+server:
+  port: 8552
